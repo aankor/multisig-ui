@@ -58,13 +58,10 @@ export const networks: Networks = {
     url: "https://solana-api.projectserum.com",
     explorerClusterSuffix: "",
     multisigProgramId: new PublicKey(
-      "A6ZR2g7UiGobEr2YkRxd1HSbc5PoKMnyDGAKh2JkWgMg"
-    ),
-    multisigUpgradeAuthority: new PublicKey(
-      "3Pb4Q6XcZCCgz7Gvd229YzFoU1DpQ4myUQFx8Z9AauQ6"
+      "msigmtwzgXJHj2ext4XJjCDmpbcMuufFb5cHuwg6Xdt"
     ),
     defaultMultisig: new PublicKey(
-      "1YCaMif84S2RSc83eiuGijeRiKXisGT62Mui7LbDHhN"
+      "magrsHFQxkkioAy45VWnZnFBBdKVdy2ZiRoRGYT9Wed"
     ),
   },
   testnet: {
@@ -73,15 +70,10 @@ export const networks: Networks = {
     url: "https://api.testnet.solana.com",
     explorerClusterSuffix: "devnet",
     multisigProgramId: new PublicKey(
-      "H88LfRBiJLZ7wYkHGuwkKTaijfQxexq8JvzUndu7fyjL"
-      //"A6ZR2g7UiGobEr2YkRxd1HSbc5PoKMnyDGAKh2JkWgMg"
-    ),
-    multisigUpgradeAuthority: new PublicKey(
-      "3Pb4Q6XcZCCgz7Gvd229YzFoU1DpQ4myUQFx8Z9AauQ6"
+      "msigmtwzgXJHj2ext4XJjCDmpbcMuufFb5cHuwg6Xdt"
     ),
     defaultMultisig: new PublicKey(
-      "BodZA4qfN9ggbmCzCyRyruPnVHbFyALZcYqBy1SgNusK"
-      //"1YCaMif84S2RSc83eiuGijeRiKXisGT62Mui7LbDHhN"
+      "magrsHFQxkkioAy45VWnZnFBBdKVdy2ZiRoRGYT9Wed"
     ),
   },
   devnet: {
@@ -90,7 +82,10 @@ export const networks: Networks = {
     url: "https://api.devnet.solana.com",
     explorerClusterSuffix: "devnet",
     multisigProgramId: new PublicKey(
-      "A6ZR2g7UiGobEr2YkRxd1HSbc5PoKMnyDGAKh2JkWgMg"
+      "msigmtwzgXJHj2ext4XJjCDmpbcMuufFb5cHuwg6Xdt"
+    ),
+    defaultMultisig: new PublicKey(
+      "magrsHFQxkkioAy45VWnZnFBBdKVdy2ZiRoRGYT9Wed"
     ),
   },
   // Fill in with your local cluster addresses.
@@ -100,7 +95,10 @@ export const networks: Networks = {
     url: "http://localhost:8899",
     explorerClusterSuffix: "localhost",
     multisigProgramId: new PublicKey(
-      "A6ZR2g7UiGobEr2YkRxd1HSbc5PoKMnyDGAKh2JkWgMg"
+      "msigmtwzgXJHj2ext4XJjCDmpbcMuufFb5cHuwg6Xdt"
+    ),
+    defaultMultisig: new PublicKey(
+      "magrsHFQxkkioAy45VWnZnFBBdKVdy2ZiRoRGYT9Wed"
     ),
   },
 };
@@ -109,7 +107,7 @@ export const initialState: State = {
   common: {
     isWalletConnected: false,
     walletProvider: "https://www.sollet.io",
-    network: networks.testnet,
+    network: networks.mainnet,
   },
 };
 
