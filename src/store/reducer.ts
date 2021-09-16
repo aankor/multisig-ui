@@ -60,6 +60,7 @@ export const networks: Networks = {
     multisigProgramId: new PublicKey(
       "msigmtwzgXJHj2ext4XJjCDmpbcMuufFb5cHuwg6Xdt"
     ),
+    multisigUpgradeAuthority: PublicKey.default,
     defaultMultisig: new PublicKey(
       "magrsHFQxkkioAy45VWnZnFBBdKVdy2ZiRoRGYT9Wed"
     ),
@@ -72,6 +73,7 @@ export const networks: Networks = {
     multisigProgramId: new PublicKey(
       "msigmtwzgXJHj2ext4XJjCDmpbcMuufFb5cHuwg6Xdt"
     ),
+    multisigUpgradeAuthority: PublicKey.default,
     defaultMultisig: new PublicKey(
       "magrsHFQxkkioAy45VWnZnFBBdKVdy2ZiRoRGYT9Wed"
     ),
@@ -84,6 +86,7 @@ export const networks: Networks = {
     multisigProgramId: new PublicKey(
       "msigmtwzgXJHj2ext4XJjCDmpbcMuufFb5cHuwg6Xdt"
     ),
+    multisigUpgradeAuthority: PublicKey.default,
     defaultMultisig: new PublicKey(
       "magrsHFQxkkioAy45VWnZnFBBdKVdy2ZiRoRGYT9Wed"
     ),
@@ -97,6 +100,7 @@ export const networks: Networks = {
     multisigProgramId: new PublicKey(
       "msigmtwzgXJHj2ext4XJjCDmpbcMuufFb5cHuwg6Xdt"
     ),
+    multisigUpgradeAuthority: PublicKey.default,
     defaultMultisig: new PublicKey(
       "magrsHFQxkkioAy45VWnZnFBBdKVdy2ZiRoRGYT9Wed"
     ),
