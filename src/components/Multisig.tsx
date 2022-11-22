@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useHistory } from "react-router";
 import { useSnackbar } from "notistack";
 import { encode as encodeBase64 } from "js-base64";
@@ -48,8 +48,7 @@ import {
   SYSVAR_RENT_PUBKEY,
   SYSVAR_CLOCK_PUBKEY,
 } from "@solana/web3.js";
-import * as anchor from "@project-serum/anchor";
-import { useWallet } from "./WalletProvider";
+import { useMultisig } from "./MultisigProvider";
 import { ViewTransactionOnExplorerButton } from "./Notification";
 import * as idl from "../utils/idl";
 import { networks } from "../store/reducer";
@@ -107,7 +106,7 @@ function NewMultisigButton() {
 }
 
 export function MultisigInstance({ multisig }: { multisig: PublicKey }) {
-  const { multisigClient } = useWallet();
+  const { multisigClient } = useMultisig();
   const [multisigAccount, setMultisigAccount] = useState<any>(undefined);
   const [transactions, setTransactions] = useState<any>(null);
   const [showSignerDialog, setShowSignerDialog] = useState(false);
@@ -115,7 +114,7 @@ export function MultisigInstance({ multisig }: { multisig: PublicKey }) {
     useState(false);
   const [forceRefresh, setForceRefresh] = useState(false);
   useEffect(() => {
-    multisigClient.account.multisig
+    multisigClient?.account.multisig
       .fetch(multisig)
       .then((account: any) => {
         setMultisigAccount(account);
@@ -124,14 +123,14 @@ export function MultisigInstance({ multisig }: { multisig: PublicKey }) {
         console.error(err);
         setMultisigAccount(null);
       });
-  }, [multisig, multisigClient.account]);
+  }, [multisig, multisigClient?.account]);
   useEffect(() => {
-    multisigClient.account.transaction.all(multisig.toBuffer()).then((txs) => {
+    multisigClient?.account.transaction.all(multisig.toBuffer()).then((txs) => {
       setTransactions(txs);
     });
-  }, [multisigClient.account.transaction, multisig, forceRefresh]);
+  }, [multisigClient?.account.transaction, multisig, forceRefresh]);
   useEffect(() => {
-    multisigClient.account.multisig
+    multisigClient?.account.multisig
       .subscribe(multisig)
       .on("change", (account) => {
         setMultisigAccount(account);
@@ -247,7 +246,7 @@ export function NewMultisigDialog({
   onClose: () => void;
 }) {
   const history = useHistory();
-  const { multisigClient } = useWallet();
+  const { multisigClient } = useMultisig();
   const { enqueueSnackbar } = useSnackbar();
   const [threshold, setThreshold] = useState(2);
   // @ts-ignore
@@ -273,12 +272,16 @@ export function NewMultisigDialog({
     // Can only grow the participant set by 2x the initialized value.
     const ownerSize = maxParticipantLength * 32 + 8;
     const multisigSize = baseSize + ownerSize + fudge;
+
+    if (!multisigClient?.provider.wallet.publicKey)
+      throw Error("Wallet not connected");
+
     const [, nonce] = await PublicKey.findProgramAddress(
       [multisig.publicKey.toBuffer()],
       multisigClient.programId
     );
     const owners = participants.map((p) => new PublicKey(p));
-    const tx = await multisigClient.rpc.createMultisig(
+    const tx = await multisigClient?.rpc.createMultisig(
       owners,
       new BN(threshold),
       nonce,
@@ -387,11 +390,11 @@ function TxListItem({
   tx: any;
 }) {
   const { enqueueSnackbar } = useSnackbar();
-  const { multisigClient } = useWallet();
+  const { multisigClient } = useMultisig();
   const [open, setOpen] = useState(false);
   const [txAccount, setTxAccount] = useState(tx.account);
   useEffect(() => {
-    multisigClient.account.transaction
+    multisigClient?.account.transaction
       .subscribe(tx.publicKey)
       .on("change", (account) => {
         setTxAccount(account);
@@ -445,7 +448,7 @@ function TxListItem({
     }
   );
   const approve = async () => {
-    if (!multisigClient.provider.wallet.publicKey)
+    if (!multisigClient?.provider.wallet.publicKey)
       throw Error("Wallet not connected");
     enqueueSnackbar("Approving transaction", {
       variant: "info",
@@ -462,6 +465,9 @@ function TxListItem({
     });
   };
   const execute = async () => {
+    if (!multisigClient?.provider.wallet.publicKey)
+      throw Error("Wallet not connected");
+
     enqueueSnackbar("Executing transaction", {
       variant: "info",
     });
@@ -683,14 +689,17 @@ function SignerDialog({
   open: boolean;
   onClose: () => void;
 }) {
-  const { multisigClient } = useWallet();
+  const { multisigClient } = useMultisig();
   const [signer, setSigner] = useState<null | string>(null);
   useEffect(() => {
+    if (!multisigClient?.programId)
+      throw Error("Wallet not connected");
+
     PublicKey.findProgramAddress(
       [multisig.toBuffer()],
       multisigClient.programId
     ).then((addrNonce) => setSigner(addrNonce[0].toString()));
-  }, [multisig, multisigClient.programId, setSigner]);
+  }, [multisig, multisigClient?.programId, setSigner]);
   return (
     <Dialog open={open} fullWidth onClose={onClose} maxWidth="md">
       <DialogTitle>
@@ -822,11 +831,11 @@ function ChangeThresholdListItemDetails({
   didAddTransaction: (tx: PublicKey) => void;
 }) {
   const [threshold, setThreshold] = useState(2);
-  const { multisigClient } = useWallet();
+  const { multisigClient } = useMultisig();
   // @ts-ignore
   const { enqueueSnackbar } = useSnackbar();
   const changeThreshold = async () => {
-    if (!multisigClient.provider.wallet.publicKey)
+    if (!multisigClient?.provider.wallet.publicKey)
       throw Error("Wallet not connected");
     enqueueSnackbar("Creating change threshold transaction", {
       variant: "info",
@@ -943,13 +952,13 @@ function SetOwnersListItemDetails({
   onClose: Function;
   didAddTransaction: (tx: PublicKey) => void;
 }) {
-  const { multisigClient } = useWallet();
+  const { multisigClient } = useMultisig();
   // @ts-ignore
   const zeroAddr = PublicKey.default.toString();
   const [participants, setParticipants] = useState([zeroAddr]);
   const { enqueueSnackbar } = useSnackbar();
   const setOwners = async () => {
-    if (!multisigClient.provider.wallet.publicKey)
+    if (!multisigClient?.provider.wallet.publicKey)
       throw Error("Wallet not connected");
     enqueueSnackbar("Creating setOwners transaction", {
       variant: "info",
@@ -1091,10 +1100,10 @@ function UpgradeIdlListItemDetails({
   const [programId, setProgramId] = useState<null | string>(null);
   const [buffer, setBuffer] = useState<null | string>(null);
 
-  const { multisigClient } = useWallet();
+  const { multisigClient } = useMultisig();
   const { enqueueSnackbar } = useSnackbar();
   const createTransactionAccount = async () => {
-    if (!multisigClient.provider.wallet.publicKey)
+    if (!multisigClient?.provider.wallet.publicKey)
       throw Error("Wallet not connected");
     enqueueSnackbar("Creating transaction", {
       variant: "info",
@@ -1231,10 +1240,10 @@ function UpgradeProgramListItemDetails({
   const [programId, setProgramId] = useState<null | string>(null);
   const [buffer, setBuffer] = useState<null | string>(null);
 
-  const { multisigClient } = useWallet();
+  const { multisigClient } = useMultisig();
   const { enqueueSnackbar } = useSnackbar();
   const createTransactionAccount = async () => {
-    if (!multisigClient.provider.wallet.publicKey)
+    if (!multisigClient?.provider.wallet.publicKey)
       throw Error("Wallet not connected");
     enqueueSnackbar("Creating transaction", {
       variant: "info",
